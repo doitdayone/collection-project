@@ -87,6 +87,7 @@ export function RichTextEditor({
         <div className="flex flex-wrap gap-1">
           {/* Text Formatting */}
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -97,6 +98,7 @@ export function RichTextEditor({
             <Bold className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -107,6 +109,7 @@ export function RichTextEditor({
             <Italic className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -117,6 +120,7 @@ export function RichTextEditor({
             <Strikethrough className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleCode().run()}
@@ -131,6 +135,7 @@ export function RichTextEditor({
 
           {/* Lists */}
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -141,6 +146,7 @@ export function RichTextEditor({
             <List className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -151,6 +157,7 @@ export function RichTextEditor({
             <ListOrdered className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
@@ -165,6 +172,7 @@ export function RichTextEditor({
 
           {/* Colors */}
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().setColor("#ef4444").run()}
@@ -173,6 +181,7 @@ export function RichTextEditor({
             <Palette className="w-4 h-4 text-red-500" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().setColor("#3b82f6").run()}
@@ -181,6 +190,7 @@ export function RichTextEditor({
             <Palette className="w-4 h-4 text-blue-500" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().setColor("#10b981").run()}
@@ -189,6 +199,7 @@ export function RichTextEditor({
             <Palette className="w-4 h-4 text-green-500" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleHighlight().run()}
@@ -203,6 +214,7 @@ export function RichTextEditor({
 
           {/* Media */}
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={addImage}
@@ -215,6 +227,7 @@ export function RichTextEditor({
 
           {/* Undo/Redo */}
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().undo().run()}
@@ -223,6 +236,7 @@ export function RichTextEditor({
             <Undo className="w-4 h-4" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().redo().run()}
@@ -238,6 +252,7 @@ export function RichTextEditor({
             (emoji) => (
               <Button
                 key={emoji}
+                type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => addEmoji(emoji)}

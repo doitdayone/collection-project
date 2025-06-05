@@ -1,6 +1,5 @@
 "use client";
 import { Heart, Calendar } from "lucide-react";
-import Image from "next/image";
 import { useQuery } from "@apollo/client";
 import { GET_COLLECTION } from "@/lib/graphql/queries";
 

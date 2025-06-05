@@ -1,53 +1,79 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import type { Item } from "@/types"
-import { Card, CardContent } from "@/components/ui/card"
-import { ExternalLink, BookOpen, Calendar, Edit, Trash2, MoreVertical } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import Image from "next/image"
-import { useState } from "react"
-import { EditItemDialog } from "./edit-item-dialog"
-import { DeleteConfirmDialog } from "./delete-confirm-dialog"
-import { useRouter } from "next/navigation"
-import { useMutation } from "@apollo/client"
-import { DELETE_ITEM } from "@/lib/graphql/mutations"
-import { GET_COLLECTION_ITEMS } from "@/lib/graphql/queries"
+import type { Item } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ExternalLink,
+  BookOpen,
+  Calendar,
+  Edit,
+  Trash2,
+  MoreVertical,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import { EditItemDialog } from "./edit-item-dialog";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client";
+import { DELETE_ITEM } from "@/lib/graphql/mutations";
+import { GET_COLLECTION_ITEMS } from "@/lib/graphql/queries";
+import { ViewDiaryDialog } from "./view-diary-dialog";
 
 interface ItemCardProps {
-  item: Item
+  item: Item;
 }
 
 export function ItemCard({ item }: ItemCardProps) {
-  const [editOpen, setEditOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const router = useRouter()
-  const isLink = item.type === "link"
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+  const router = useRouter();
+  const isLink = item.type === "link";
 
   const [deleteItem, { loading: deleteLoading }] = useMutation(DELETE_ITEM, {
     variables: { id: item.id },
-    refetchQueries: [{ query: GET_COLLECTION_ITEMS, variables: { collectionId: item.collectionId } }],
+    refetchQueries: [
+      {
+        query: GET_COLLECTION_ITEMS,
+        variables: { collectionId: item.collectionId },
+      },
+    ],
     onCompleted: () => {
-      router.refresh()
+      router.refresh();
     },
-  })
+  });
 
   const handleClick = (e: React.MouseEvent) => {
-    // Don't trigger click if clicking on dropdown menu
-    if ((e.target as HTMLElement).closest("[data-dropdown-trigger]")) {
-      return
+    const target = e.target as HTMLElement;
+
+    if (
+      target.closest("[data-no-link]") ||
+      target.closest("[data-dropdown-trigger]")
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
     }
 
     if (isLink && item.url) {
-      window.open(item.url, "_blank", "noopener,noreferrer")
+      window.open(item.url, "_blank", "noopener,noreferrer");
+    } else if (item.type === "diary") {
+      setViewOpen(true);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    deleteItem()
-  }
+    deleteItem();
+  };
 
   return (
     <>
@@ -62,7 +88,11 @@ export function ItemCard({ item }: ItemCardProps) {
             {/* Item Image/Icon */}
             <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center shadow-sm flex-shrink-0">
               {item.image ? (
-                <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
+                <img
+                  src={item.image || "/placeholder.svg"}
+                  alt={item.title}
+                  className="object-cover w-full h-full"
+                />
               ) : (
                 <div className="text-lg">{isLink ? "🔗" : "📝"}</div>
               )}
@@ -71,12 +101,20 @@ export function ItemCard({ item }: ItemCardProps) {
             {/* Item Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold text-gray-800 line-clamp-2 leading-tight">{item.title}</h3>
+                <h3 className="font-semibold text-gray-800 line-clamp-2 leading-tight">
+                  {item.title}
+                </h3>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {isLink && <ExternalLink className="w-4 h-4 text-gray-400" />}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild data-dropdown-trigger>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
+                        data-dropdown-trigger
+                        data-no-link
+                      >
                         <MoreVertical className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -84,13 +122,25 @@ export function ItemCard({ item }: ItemCardProps) {
                       align="end"
                       className="rounded-xl border-0 shadow-lg bg-white/95 backdrop-blur-sm"
                     >
-                      <DropdownMenuItem onClick={() => setEditOpen(true)} className="rounded-lg">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditOpen(true);
+                        }}
+                        className="rounded-lg"
+                        data-no-link
+                      >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
+
                       <DropdownMenuItem
-                        onClick={() => setDeleteOpen(true)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteOpen(true);
+                        }}
                         className="rounded-lg text-red-600 focus:text-red-600"
+                        data-no-link
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Delete
@@ -105,14 +155,20 @@ export function ItemCard({ item }: ItemCardProps) {
                 <div
                   className="text-sm text-gray-600 mt-2 line-clamp-2"
                   dangerouslySetInnerHTML={{
-                    __html: item.content.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+                    __html:
+                      item.content.replace(/<[^>]*>/g, "").substring(0, 100) +
+                      "...",
                   }}
                 />
               )}
 
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                 <div className="flex items-center gap-1">
-                  {isLink ? <ExternalLink className="w-3 h-3" /> : <BookOpen className="w-3 h-3" />}
+                  {isLink ? (
+                    <ExternalLink className="w-3 h-3" />
+                  ) : (
+                    <BookOpen className="w-3 h-3" />
+                  )}
                   <span>{isLink ? "Link" : "Diary"}</span>
                 </div>
 
@@ -132,6 +188,7 @@ export function ItemCard({ item }: ItemCardProps) {
       </Card>
 
       <EditItemDialog item={item} open={editOpen} onOpenChange={setEditOpen} />
+      <ViewDiaryDialog item={item} open={viewOpen} onOpenChange={setViewOpen} />
 
       <DeleteConfirmDialog
         open={deleteOpen}
@@ -141,5 +198,5 @@ export function ItemCard({ item }: ItemCardProps) {
         description={`Are you sure you want to delete "${item.title}"? This action cannot be undone.`}
       />
     </>
-  )
+  );
 }

@@ -1,51 +1,59 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import type { Collection } from "@/types"
-import { Card, CardContent } from "@/components/ui/card"
-import { Heart, BookOpen, Edit, Trash2, MoreVertical } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import Image from "next/image"
-import { useState } from "react"
-import { EditCollectionDialog } from "./edit-collection-dialog"
-import { DeleteConfirmDialog } from "./delete-confirm-dialog"
-import { useRouter } from "next/navigation"
-import { useMutation } from "@apollo/client"
-import { DELETE_COLLECTION } from "@/lib/graphql/mutations"
-import { GET_COLLECTIONS } from "@/lib/graphql/queries"
+import type { Collection } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heart, BookOpen, Edit, Trash2, MoreVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { EditCollectionDialog } from "./edit-collection-dialog";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client";
+import { DELETE_COLLECTION } from "@/lib/graphql/mutations";
+import { GET_COLLECTIONS } from "@/lib/graphql/queries";
 
 interface CollectionCardProps {
-  collection: Collection
+  collection: Collection;
 }
 
 export function CollectionCard({ collection }: CollectionCardProps) {
-  const [editOpen, setEditOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const router = useRouter()
-  const itemCount = collection.itemCount || 0
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const router = useRouter();
+  const itemCount = collection.itemCount || 0;
 
-  const [deleteCollection, { loading: deleteLoading }] = useMutation(DELETE_COLLECTION, {
-    variables: { id: collection.id },
-    refetchQueries: [{ query: GET_COLLECTIONS }],
-    onCompleted: () => {
-      router.refresh()
-    },
-  })
+  const [deleteCollection, { loading: deleteLoading }] = useMutation(
+    DELETE_COLLECTION,
+    {
+      variables: { id: collection.id },
+      refetchQueries: [{ query: GET_COLLECTIONS }],
+      onCompleted: () => {
+        router.refresh();
+      },
+    }
+  );
 
   const handleDelete = async () => {
-    deleteCollection()
-  }
+    deleteCollection();
+  };
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't navigate if clicking on dropdown menu
     if ((e.target as HTMLElement).closest("[data-dropdown-trigger]")) {
-      e.preventDefault()
-      return
+      e.preventDefault();
+      return;
     }
-  }
+  };
 
   return (
     <>
@@ -54,12 +62,14 @@ export function CollectionCard({ collection }: CollectionCardProps) {
           <CardContent className="p-0">
             {/* Collection Image */}
             <div className="relative h-48 overflow-hidden rounded-t-3xl">
-              <Image
-                src={collection.image || "/placeholder.svg?height=200&width=300"}
+              <img
+                src={
+                  collection.image || "/placeholder.svg?height=200&width=300"
+                }
                 alt={collection.title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-300"
+                className="object-cover group-hover:scale-110 transition-transform duration-300 w-full h-full object-center"
               />
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               <div className="absolute top-4 right-4 flex gap-2">
                 <div className="bg-white/90 backdrop-blur-sm rounded-full p-2">
@@ -80,7 +90,10 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                     align="end"
                     className="rounded-xl border-0 shadow-lg bg-white/95 backdrop-blur-sm"
                   >
-                    <DropdownMenuItem onClick={() => setEditOpen(true)} className="rounded-lg">
+                    <DropdownMenuItem
+                      onClick={() => setEditOpen(true)}
+                      className="rounded-lg"
+                    >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </DropdownMenuItem>
@@ -112,7 +125,11 @@ export function CollectionCard({ collection }: CollectionCardProps) {
         </Card>
       </Link>
 
-      <EditCollectionDialog collection={collection} open={editOpen} onOpenChange={setEditOpen} />
+      <EditCollectionDialog
+        collection={collection}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
 
       <DeleteConfirmDialog
         open={deleteOpen}
@@ -122,5 +139,5 @@ export function CollectionCard({ collection }: CollectionCardProps) {
         description={`Are you sure you want to delete "${collection.title}" and all its items? This action cannot be undone.`}
       />
     </>
-  )
+  );
 }

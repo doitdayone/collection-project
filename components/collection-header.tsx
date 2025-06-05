@@ -1,19 +1,19 @@
-"use client"
-import { Heart, Calendar } from "lucide-react"
-import Image from "next/image"
-import { useQuery } from "@apollo/client"
-import { GET_COLLECTION } from "@/lib/graphql/queries"
+"use client";
+import { Heart, Calendar } from "lucide-react";
+import Image from "next/image";
+import { useQuery } from "@apollo/client";
+import { GET_COLLECTION } from "@/lib/graphql/queries";
 
 interface CollectionHeaderProps {
-  collectionId: string
+  collectionId: string;
 }
 
 export function CollectionHeader({ collectionId }: CollectionHeaderProps) {
   const { loading, error, data } = useQuery(GET_COLLECTION, {
     variables: { id: collectionId },
-  })
+  });
 
-  const collection = data?.collection
+  const collection = data?.collection;
 
   if (loading) {
     return (
@@ -26,7 +26,7 @@ export function CollectionHeader({ collectionId }: CollectionHeaderProps) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !collection) {
@@ -34,21 +34,22 @@ export function CollectionHeader({ collectionId }: CollectionHeaderProps) {
       <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 mb-8">
         <div className="text-center">
           <div className="text-4xl mb-2">😢</div>
-          <h2 className="text-xl font-semibold text-gray-700">Collection not found</h2>
+          <h2 className="text-xl font-semibold text-gray-700">
+            Collection not found
+          </h2>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 mb-8 shadow-lg">
       <div className="flex items-center gap-6">
         <div className="relative w-24 h-24 rounded-2xl overflow-hidden shadow-md">
-          <Image
+          <img
             src={collection.image || "/placeholder.svg?height=96&width=96"}
             alt={collection.title}
-            fill
-            className="object-cover"
+            className="object-cover w-full h-full object-center"
           />
         </div>
         <div>
@@ -60,12 +61,13 @@ export function CollectionHeader({ collectionId }: CollectionHeaderProps) {
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               <span className="text-sm">
-                {collection.itemCount || 0} {collection.itemCount === 1 ? "item" : "items"} saved
+                {collection.itemCount || 0}{" "}
+                {collection.itemCount === 1 ? "item" : "items"} saved
               </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
